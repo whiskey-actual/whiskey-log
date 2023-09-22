@@ -5,7 +5,7 @@ export class LogEngine {
 
   public logStack:string[]=[]
 
-  public AddLogEntry(severity: Severity, message: string, columnWidth:number=48, showCallStack: boolean = false) {
+  public AddLogEntry(severity: LogEngine.Severity, message: string, columnWidth:number=48, showCallStack: boolean = false) {
 
     let output = "";
 
@@ -77,7 +77,7 @@ export class LogEngine {
 
   }
 
-  private static padString(stringToPad:string, padCharacter:string=' ', width:number=16, padSide:Direction=Direction.Right) {
+  private static padString(stringToPad:string, padCharacter:string=' ', width:number=16, padSide:LogEngine.Direction=LogEngine.Direction.Right) {
     if (typeof stringToPad === 'undefined') {
       return padCharacter;
     }
@@ -178,18 +178,20 @@ export class LogEngine {
 
 }
 
-export enum Severity {
-  Debug,
-  Info,
-  Ok,
-  Warning,
-  Error,
-  Change,
-  Add
-}
+export namespace LogEngine {
 
-export enum Direction {
-  Left,
-  Right
+  export enum Severity {
+    Debug,
+    Info,
+    Ok,
+    Warning,
+    Error,
+    Change,
+    Add
+  }
+  
+  export enum Direction {
+    Left,
+    Right
+  }
 }
-
