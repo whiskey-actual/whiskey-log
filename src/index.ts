@@ -1,12 +1,14 @@
 export class LogEngine {
-  constructor(logStack:string[]) {
+  constructor(logStack:string[], showDebug:boolean=false) {
     this.logStack=logStack;
   }
 
   public logStack:string[]=[]
+  private _showDebug:boolean=false
 
   public AddLogEntry(severity: LogEngine.Severity, message: string, columnWidth:number=48, showCallStack: boolean = false) {
 
+    if(severity!=LogEngine.Severity.Debug || (severity===LogEngine.Severity.Debug && this._showDebug)) {
     let output = "";
 
     let severityColorSequence = '';
@@ -75,6 +77,7 @@ export class LogEngine {
 
     console.log(output);
 
+    }
   }
 
   private static padString(stringToPad:string, padCharacter:string=' ', width:number=16, padSide:LogEngine.Direction=LogEngine.Direction.Right) {
