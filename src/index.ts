@@ -13,31 +13,31 @@ export class LogEngine {
     let severityColorText = '';
 
     switch(severity) {
-      case Severity.Debug:
+      case LogEngine.Severity.Debug:
         severityColorSequence='\x1b[97m',
         severityColorText='*'
         break;
-      case Severity.Info:
+      case LogEngine.Severity.Info:
         severityColorSequence='\x1b[96m',
         severityColorText='i'
         break;
-      case Severity.Ok:
+      case LogEngine.Severity.Ok:
         severityColorSequence='\x1b[92m',
         severityColorText='\u221a'
         break;
-      case Severity.Warning:
+      case LogEngine.Severity.Warning:
         severityColorSequence='\x1b[93m',
         severityColorText='!'
         break;
-      case Severity.Error:
+      case LogEngine.Severity.Error:
         severityColorSequence='\x1b[31m',
         severityColorText='X'
         break;
-      case Severity.Change:
+      case LogEngine.Severity.Change:
         severityColorSequence='\x1b[95m',
         severityColorText='\u0394'
         break;
-      case Severity.Add:
+      case LogEngine.Severity.Add:
         severityColorSequence='\x1b[94m',
         severityColorText='+'
         break;
@@ -63,7 +63,7 @@ export class LogEngine {
         logStackOutput += `${this.logStack[i]}`
         if(i<this.logStack.length-1) { logStackOutput += ':'}
       }
-      logStackOutput = LogEngine.padString(logStackOutput,' ',columnWidth, Direction.Right)
+      logStackOutput = LogEngine.padString(logStackOutput,' ',columnWidth, LogEngine.Direction.Right)
 
 
       output += `${logStackOutput}| ${message}`;
@@ -88,7 +88,7 @@ export class LogEngine {
 
       const padString:string = Array(width-stringToPad.length).join(padCharacter).toString()
 
-      if (padSide===Direction.Left) {
+      if (padSide===LogEngine.Direction.Left) {
         return (padString + stringToPad)
       } else {
         return (stringToPad + padString)
