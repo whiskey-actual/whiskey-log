@@ -1,12 +1,13 @@
 export class LogEngine {
   constructor(logStack:string[], showDebug:boolean=false) {
     this.logStack=logStack;
+    this._showDebug = showDebug
   }
 
   public logStack:string[]=[]
   private _showDebug:boolean=false
 
-  public AddLogEntry(severity: LogEngine.Severity, message: string, columnWidth:number=48, showCallStack: boolean = false) {
+  public AddLogEntry(severity: LogEngine.Severity, action: LogEngine.Action, message: string, columnWidth:number=48, showCallStack: boolean = false) {
 
     if(severity!=LogEngine.Severity.Debug || (severity===LogEngine.Severity.Debug && this._showDebug)) {
     let output = "";
@@ -35,25 +36,34 @@ export class LogEngine {
         severityColorSequence='\x1b[31m',
         severityColorText='X'
         break;
-      case LogEngine.Severity.Change:
-        severityColorSequence='\x1b[95m',
-        severityColorText='\u0394'
-        break;
-      case LogEngine.Severity.Add:
-        severityColorSequence='\x1b[94m',
-        severityColorText='+'
-        break;
       default:
         severityColorSequence='';
         severityColorText='';
         break;
+    }
 
+    let actionColorSequence = '';
+    let actionColorText = '';
+
+    switch(action) {
+      case LogEngine.Action.Change:
+        actionColorSequence='\x1b[95m',
+        actionColorText='\u0394'
+        break;
+      case LogEngine.Action.Add:
+        actionColorSequence='\x1b[94m',
+        actionColorText='+'
+        break;
+      default:
+        actionColorSequence='';
+        actionColorText='-';
+        break;
     }
 
     try {
       const dt = LogEngine.getDateTimeString();
 
-      output = `${dt} |${severityColorSequence}\xa0${severityColorText}\xa0\x1b[0m|`;
+      output = `${dt} |${severityColorSequence}\xa0${severityColorText}\xa0\x1b[0m| ${actionColorSequence}\xa0${actionColorText}\xa0\x1b[0m|`;
 
       if(showCallStack) {
         const cs = LogEngine.getCallStackString();
@@ -189,8 +199,13 @@ export namespace LogEngine {
     Ok,
     Warning,
     Error,
+  }
+
+  export enum Action {
+    Note,
+    Add,
     Change,
-    Add
+    Remove,
   }
   
   export enum Direction {
