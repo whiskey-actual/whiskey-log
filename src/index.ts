@@ -58,6 +58,7 @@ export class LogEngine {
       case LogEngine.Action.Note:
         actionColorSequence='\x1b[100m'
         actionColorText='\u00b7'
+        break;
       default:
         actionColorSequence='';
         actionColorText='-';
