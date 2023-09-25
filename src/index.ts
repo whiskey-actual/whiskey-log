@@ -7,7 +7,7 @@ export class LogEngine {
   public logStack:string[]=[]
   private _showDebug:boolean=false
 
-  public AddLogEntry(severity: LogEngine.Severity, action: LogEngine.Action, message: string, columnWidth:number=48, showCallStack: boolean = false) {
+  public AddLogEntry(severity: LogEngine.Severity, action: LogEngine.Action, message: string, columnWidth:number=48) {
 
     if(severity!=LogEngine.Severity.Debug || (severity===LogEngine.Severity.Debug && this._showDebug)) {
     let output = "";
@@ -68,22 +68,25 @@ export class LogEngine {
     try {
       const dt = LogEngine.getDateTimeString();
 
-      output = `${dt} |${severityColorSequence}\xa0${severityColorText}\xa0\x1b[0m| ${actionColorSequence}\xa0${actionColorText}\xa0\x1b[0m|`;
-
-      if(showCallStack) {
-        const cs = LogEngine.getCallStackString();
-        output += ` ${cs} |`
-      }
+      const delimiter = '\x1b[0m|'
+      
+      output = `${dt}`
+      output += `${delimiter}`
+      output += `${severityColorSequence}\xa0${severityColorText}\xa0`;
+      output += `${delimiter}`
+      output += `${actionColorSequence}\xa0${actionColorText}\xa0`;
+      output += `${delimiter}`
 
       let logStackOutput:string = ' '
       for(let i=0;i<this.logStack.length;i++) {
         logStackOutput += `${this.logStack[i]}`
         if(i<this.logStack.length-1) { logStackOutput += ':'}
       }
-      logStackOutput = LogEngine.padString(logStackOutput,' ',columnWidth, LogEngine.Direction.Right)
+      logStackOutput = LogEngine.padString(logStackOutput, ' ', columnWidth, LogEngine.Direction.Right)
 
-
-      output += `${logStackOutput}| ${message}`;
+      output += `${logStackOutput}`
+      output += `${delimiter}`
+      output += `${message}`;
 
     } catch (err) {
       console.error(err);
@@ -134,57 +137,6 @@ export class LogEngine {
       }`;
   
       output = `${date} ${time}`
-  
-    } catch (err) {
-      throw(`${arguments.callee.toString()}: ${err}`)
-    }
-  
-    return output;
-  
-  }
-  
-  private static getCallStackString():string {
-  
-    let output:string = '';
-  
-    try {
-  
-      let pathElements = [];
-      const callStack = new Error().stack?.split('\n');
-  
-      if(callStack) {
-  
-        const functionsToIgnore = [
-          'Object.<anonymous>',
-          'Server.<anonymous>',
-          'Object.onceWrapper',
-          'Server.emit',
-          'emitListeningNT',
-          'Module._compile',
-          'Module._extensions..js',
-          'Module.load',
-          'Module._load',
-          'Function.executeUserEntryPoint',
-          'process.processTicksAndRejections',
-          'getCallStackString',
-          'WhiskeyLog.AddLogEntry'
-        ]
-  
-        for(let i=1; i<callStack.length; i++) {
-  
-          const functionName = "" + callStack[i].trim().split(' ')[1];
-  
-          if(!functionsToIgnore.includes(functionName) && !functionName.startsWith("node:") && !functionName.startsWith("WhiskeyUtilities.")) {
-            pathElements.push(functionName);
-          }
-  
-        }
-  
-        if(pathElements.length>0) {
-          output = pathElements.reverse().join(":");
-        }
-  
-      }
   
     } catch (err) {
       throw(`${arguments.callee.toString()}: ${err}`)
