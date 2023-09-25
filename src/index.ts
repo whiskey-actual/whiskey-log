@@ -87,7 +87,7 @@ export class LogEngine {
       output += `${delimiter}`
       output += `${actionColorSequence}\xa0${actionColorText}\xa0`;
       output += `${delimiter}`
-      output += `${message}`;
+      output += ` ${message}`;
 
     } catch (err) {
       console.error(err);
