@@ -74,8 +74,7 @@ export class LogEngine {
       output += `${delimiter}`
       output += `${severityColorSequence}\xa0${severityColorText}\xa0`;
       output += `${delimiter}`
-      output += `${actionColorSequence}\xa0${actionColorText}\xa0`;
-      output += `${delimiter}`
+      
 
       let logStackOutput:string = ' '
       for(let i=0;i<this.logStack.length;i++) {
@@ -85,6 +84,8 @@ export class LogEngine {
       logStackOutput = LogEngine.padString(logStackOutput, ' ', columnWidth, LogEngine.Direction.Right)
 
       output += `${logStackOutput}`
+      output += `${delimiter}`
+      output += `${actionColorSequence}\xa0${actionColorText}\xa0`;
       output += `${delimiter}`
       output += `${message}`;
 
