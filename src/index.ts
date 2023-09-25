@@ -2,6 +2,7 @@ export class LogEngine {
   constructor(logStack:string[], showDebug:boolean=false) {
     this.logStack=logStack;
     this._showDebug = showDebug
+    this.AddLogEntry(LogEngine.Severity.Info, LogEngine.Action.Success, `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
   }
 
   public logStack:string[]=[]
