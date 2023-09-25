@@ -24,10 +24,7 @@ export class LogEngine {
         severityColorSequence='\x1b[96m',
         severityColorText='i'
         break;
-      case LogEngine.Severity.Ok:
-        severityColorSequence='\x1b[92m',
-        severityColorText='\u221a'
-        break;
+
       case LogEngine.Severity.Warning:
         severityColorSequence='\x1b[93m',
         severityColorText='!'
@@ -53,6 +50,10 @@ export class LogEngine {
       case LogEngine.Action.Add:
         actionColorSequence='\x1b[94m',
         actionColorText='+'
+        break;
+      case LogEngine.Action.Verified:
+        severityColorSequence='\x1b[92m',
+        severityColorText='\u221a'
         break;
       default:
         actionColorSequence='';
@@ -206,6 +207,7 @@ export namespace LogEngine {
     Add,
     Change,
     Remove,
+    Verified
   }
   
   export enum Direction {
