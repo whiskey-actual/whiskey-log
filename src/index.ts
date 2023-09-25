@@ -51,9 +51,9 @@ export class LogEngine {
         actionColorSequence='\x1b[94m',
         actionColorText='+'
         break;
-      case LogEngine.Action.Verified:
-        severityColorSequence='\x1b[92m',
-        severityColorText='\u221a'
+      case LogEngine.Action.Success:
+        actionColorSequence='\x1b[92m',
+        actionColorText='\u221a'
         break;
       default:
         actionColorSequence='';
@@ -197,7 +197,6 @@ export namespace LogEngine {
   export enum Severity {
     Debug,
     Info,
-    Ok,
     Warning,
     Error,
   }
@@ -207,7 +206,7 @@ export namespace LogEngine {
     Add,
     Change,
     Remove,
-    Verified
+    Success
   }
   
   export enum Direction {
