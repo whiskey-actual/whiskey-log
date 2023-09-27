@@ -1,14 +1,16 @@
 export class LogEngine {
-  constructor(logStack:string[], showDebug:boolean=false) {
+  constructor(logStack:string[], showDebug:boolean=false, logStackColumnWidth:number=48) {
     this.logStack=logStack;
     this._showDebug = showDebug
+    this._logStackColumnWith = logStackColumnWidth
     this.AddLogEntry(LogEngine.Severity.Info, LogEngine.Action.Success, `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
   }
 
   public logStack:string[]=[]
   private _showDebug:boolean=false
+  private _logStackColumnWith:number = 48
 
-  public AddLogEntry(severity: LogEngine.Severity, action: LogEngine.Action, message: string, columnWidth:number=48) {
+  public AddLogEntry(severity: LogEngine.Severity, action: LogEngine.Action, message: string) {
 
     if(severity!=LogEngine.Severity.Debug || (severity===LogEngine.Severity.Debug && this._showDebug)) {
     let output = "";
@@ -82,7 +84,7 @@ export class LogEngine {
         logStackOutput += `${this.logStack[i]}`
         if(i<this.logStack.length-1) { logStackOutput += ':'}
       }
-      logStackOutput = LogEngine.padString(logStackOutput, ' ', columnWidth, LogEngine.Direction.Right)
+      logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWith, LogEngine.Direction.Right)
 
       output += `${logStackOutput}`
       output += `${delimiter}`
