@@ -90,7 +90,9 @@ export class LogEngine {
       output += `${delimiter}`
       output += `${actionColorSequence}\xa0${actionColorText}\xa0`;
       output += `${delimiter}`
+      output += severity===LogEngine.Severity.Error ? '\x1b[31m' : ''
       output += ` ${message}`;
+      output += '\x1b[0m' // ensure formatting is removed
 
     } catch (err) {
       console.error(err);
