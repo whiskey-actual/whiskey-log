@@ -73,7 +73,7 @@ export class LogEngine {
 
       const delimiter = '\x1b[0m|'
       
-      output = `${dt}`
+      output = `${dt} `
       output += `${delimiter}`
       output += `${severityColorSequence}\xa0${severityColorText}\xa0`;
       output += `${delimiter}`
@@ -102,6 +102,11 @@ export class LogEngine {
     console.log(output);
 
     }
+  }
+
+  public AddDelimiter(delimiterLabel:string) {
+    const delimiterCharacter:string="-"
+    this.AddLogEntry(LogEngine.Severity.Info, LogEngine.Action.Note, `${delimiterCharacter.repeat(2)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(120-this._logStackColumnWith)}`)
   }
 
   private static padString(stringToPad:string, padCharacter:string=' ', width:number=16, padSide:LogEngine.Direction=LogEngine.Direction.Right) {
