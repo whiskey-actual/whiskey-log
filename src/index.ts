@@ -1,14 +1,16 @@
 export class LogEngine {
-  constructor(logStack:string[], showDebug:boolean=false, logStackColumnWidth:number=48) {
+  constructor(logStack:string[], showDebug:boolean=false, logStackColumnWidth:number=48, entityColumnWidth:number=16) {
     this.logStack=logStack;
     this._showDebug = showDebug
-    this._logStackColumnWith = logStackColumnWidth
+    this._logStackColumnWidth = logStackColumnWidth
+    this._entityColumnWidth = entityColumnWidth
     this.AddLogEntry(LogEngine.EntryType.Info, `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
   }
 
   public logStack:string[]=[]
   private _showDebug:boolean=false
-  private _logStackColumnWith:number = 48
+  private _logStackColumnWidth:number = 48
+  private _entityColumnWidth:number = 16
 
   public AddLogEntry(type: LogEngine.EntryType, message: string, entryObjectName:string='' ) {
 
@@ -67,13 +69,13 @@ export class LogEngine {
         logStackOutput += `${this.logStack[i]}`
         if(i<this.logStack.length-1) { logStackOutput += ':'}
       }
-      logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWith, LogEngine.Direction.Right)
+      logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth, LogEngine.Direction.Right)
 
       output += `${logStackOutput}`
       output += `${delimiter}`
       output += `${entryColorSequence}\xa0${entryColorText}\xa0`;
       output += `${delimiter}`
-      output += `${entryObjectName}`
+      output += LogEngine.padString(entryObjectName, ' ', this._entityColumnWidth, LogEngine.Direction.Right)
       output += `${delimiter}`
       output += type===LogEngine.EntryType.Error ? '\x1b[31m' : ''
       output += ` ${message}`;
@@ -91,7 +93,7 @@ export class LogEngine {
 
   public AddDelimiter(delimiterLabel:string) {
     const delimiterCharacter:string="-"
-    this.AddLogEntry(LogEngine.EntryType.Info, `${delimiterCharacter.repeat(2)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(120-this._logStackColumnWith)}`)
+    this.AddLogEntry(LogEngine.EntryType.Info, `${delimiterCharacter.repeat(2)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(120-this._logStackColumnWidth)}`)
   }
 
   private static padString(stringToPad:string, padCharacter:string=' ', width:number=16, padSide:LogEngine.Direction=LogEngine.Direction.Right) {
