@@ -3,82 +3,65 @@ export class LogEngine {
     this.logStack=logStack;
     this._showDebug = showDebug
     this._logStackColumnWith = logStackColumnWidth
-    this.AddLogEntry(LogEngine.Severity.Info, LogEngine.Action.Success, `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
+    this.AddLogEntry(LogEngine.EntryType.Info, `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
   }
 
   public logStack:string[]=[]
   private _showDebug:boolean=false
   private _logStackColumnWith:number = 48
 
-  public AddLogEntry(severity: LogEngine.Severity, action: LogEngine.Action, message: string) {
+  public AddLogEntry(type: LogEngine.EntryType, message: string, entryObjectName:string='' ) {
 
-    if(severity!=LogEngine.Severity.Debug || (severity===LogEngine.Severity.Debug && this._showDebug)) {
+    if(type!=LogEngine.EntryType.Debug || (type===LogEngine.EntryType.Debug && this._showDebug)) {
     let output = "";
 
-    let severityColorSequence = '';
-    let severityColorText = '';
+    let entryColorSequence = '';
+    let entryColorText = '';
 
-    switch(severity) {
-      case LogEngine.Severity.Debug:
-        severityColorSequence='\x1b[97m',
-        severityColorText='*'
+    switch(type) {
+      case LogEngine.EntryType.Debug:
+        entryColorSequence='\x1b[97m',
+        entryColorText='*'
         break;
-      case LogEngine.Severity.Info:
-        severityColorSequence='\x1b[96m',
-        severityColorText='i'
+      case LogEngine.EntryType.Info:
+        entryColorSequence='\x1b[90m',
+        entryColorText='\u00b7'
         break;
 
-      case LogEngine.Severity.Warning:
-        severityColorSequence='\x1b[93m',
-        severityColorText='!'
+      case LogEngine.EntryType.Warning:
+        entryColorSequence='\x1b[93m',
+        entryColorText='!'
         break;
-      case LogEngine.Severity.Error:
-        severityColorSequence='\x1b[31m',
-        severityColorText='X'
+      case LogEngine.EntryType.Error:
+        entryColorSequence='\x1b[31m',
+        entryColorText='X'
+        break;
+      case LogEngine.EntryType.Change:
+        entryColorSequence='\x1b[95m',
+        entryColorText='\u0394'
+        break;
+      case LogEngine.EntryType.Add:
+        entryColorSequence='\x1b[94m',
+        entryColorText='+'
+        break;
+      case LogEngine.EntryType.Success:
+        entryColorSequence='\x1b[92m',
+        entryColorText='\u221a'
         break;
       default:
-        severityColorSequence='';
-        severityColorText='';
+        entryColorSequence='';
+        entryColorText='-';
         break;
     }
 
-    let actionColorSequence = '';
-    let actionColorText = '';
-
-    switch(action) {
-      case LogEngine.Action.Change:
-        actionColorSequence='\x1b[95m',
-        actionColorText='\u0394'
-        break;
-      case LogEngine.Action.Add:
-        actionColorSequence='\x1b[94m',
-        actionColorText='+'
-        break;
-      case LogEngine.Action.Success:
-        actionColorSequence='\x1b[92m',
-        actionColorText='\u221a'
-        break;
-      case LogEngine.Action.Note:
-        actionColorSequence='\x1b[90m'
-        actionColorText='\u00b7'
-        break;
-      default:
-        actionColorSequence='';
-        actionColorText='-';
-        break;
-    }
 
     try {
       const dt = LogEngine.getDateTimeString();
 
       const delimiter = '\x1b[0m|'
       
-      output = `${dt} `
-      output += `${delimiter}`
-      output += `${severityColorSequence}\xa0${severityColorText}\xa0`;
-      output += `${delimiter}`
+      output = `${dt} ${delimiter}`
       
-
       let logStackOutput:string = ' '
       for(let i=0;i<this.logStack.length;i++) {
         logStackOutput += `${this.logStack[i]}`
@@ -88,9 +71,11 @@ export class LogEngine {
 
       output += `${logStackOutput}`
       output += `${delimiter}`
-      output += `${actionColorSequence}\xa0${actionColorText}\xa0`;
+      output += `${entryColorSequence}\xa0${entryColorText}\xa0`;
       output += `${delimiter}`
-      output += severity===LogEngine.Severity.Error ? '\x1b[31m' : ''
+      output += `${entryObjectName}`
+      output += `${delimiter}`
+      output += type===LogEngine.EntryType.Error ? '\x1b[31m' : ''
       output += ` ${message}`;
       output += '\x1b[0m' // ensure formatting is removed
 
@@ -106,7 +91,7 @@ export class LogEngine {
 
   public AddDelimiter(delimiterLabel:string) {
     const delimiterCharacter:string="-"
-    this.AddLogEntry(LogEngine.Severity.Info, LogEngine.Action.Note, `${delimiterCharacter.repeat(2)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(120-this._logStackColumnWith)}`)
+    this.AddLogEntry(LogEngine.EntryType.Info, `${delimiterCharacter.repeat(2)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(120-this._logStackColumnWith)}`)
   }
 
   private static padString(stringToPad:string, padCharacter:string=' ', width:number=16, padSide:LogEngine.Direction=LogEngine.Direction.Right) {
@@ -161,20 +146,17 @@ export class LogEngine {
 
 export namespace LogEngine {
 
-  export enum Severity {
+  export enum EntryType {
     Debug,
     Info,
     Warning,
     Error,
-  }
-
-  export enum Action {
-    Note,
     Add,
     Change,
     Remove,
     Success
   }
+
   
   export enum Direction {
     Left,
