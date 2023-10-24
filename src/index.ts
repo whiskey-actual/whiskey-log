@@ -1,5 +1,5 @@
 export class LogEngine {
-  constructor(logStack:string[], showDebug:boolean=false, logStackColumnWidth:number=48, entityColumnWidth:number=16) {
+  constructor(logStack:string[], showDebug:boolean=false, logStackColumnWidth:number=40, entityColumnWidth:number=24) {
     this.logStack=logStack;
     this._showDebug = showDebug
     this._logStackColumnWidth = logStackColumnWidth
@@ -9,8 +9,8 @@ export class LogEngine {
 
   public logStack:string[]=[]
   private _showDebug:boolean=false
-  private _logStackColumnWidth:number = 48
-  private _entityColumnWidth:number = 16
+  private _logStackColumnWidth:number = 40
+  private _entityColumnWidth:number = 24
 
   public AddLogEntry(type: LogEngine.EntryType, message: string, entryObjectName:string='' ) {
 
@@ -75,7 +75,7 @@ export class LogEngine {
       output += `${delimiter}`
       output += `${entryColorSequence}\xa0${entryColorText}\xa0`;
       output += `${delimiter}`
-      output += LogEngine.padString(entryObjectName, ' ', this._entityColumnWidth, LogEngine.Direction.Right)
+      output += ` ${LogEngine.padString(entryObjectName, ' ', this._entityColumnWidth, LogEngine.Direction.Right)}`
       output += `${delimiter}`
       output += type===LogEngine.EntryType.Error ? '\x1b[31m' : ''
       output += ` ${message}`;
