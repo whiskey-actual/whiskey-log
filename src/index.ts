@@ -97,8 +97,8 @@ export class LogEngine {
   }
 
   private static padString(stringToPad:string, padCharacter:string=' ', width:number=16, padSide:LogEngine.Direction=LogEngine.Direction.Right) {
-    if (typeof stringToPad === 'undefined') {
-      return padCharacter;
+    if (typeof stringToPad === 'undefined' || !stringToPad || stringToPad===null) {
+      return Array(width).join(padCharacter).toString()
     }
     else if (stringToPad.length>width) {
       return stringToPad.substring(0,width-3) + '..'
