@@ -12,75 +12,84 @@ export class LogEngine {
   private _logStackColumnWidth:number = 40
   private _entityColumnWidth:number = 24
 
-  public AddLogEntry(type: LogEngine.EntryType, message: string, entryObjectName:string='' ) {
+  public AddLogEntry(type: LogEngine.EntryType, message: string, entryObjectName:string='', splitMessageAtString="\n") {
 
-    if(type!=LogEngine.EntryType.Debug || (type===LogEngine.EntryType.Debug && this._showDebug)) {
     let output = "";
-
-    let entryColorSequence = '';
-    let entryColorText = '';
-
-    switch(type) {
-      case LogEngine.EntryType.Debug:
-        entryColorSequence='\x1b[97m',
-        entryColorText='*'
-        break;
-      case LogEngine.EntryType.Info:
-        entryColorSequence='\x1b[90m',
-        entryColorText='\u00b7'
-        break;
-
-      case LogEngine.EntryType.Warning:
-        entryColorSequence='\x1b[93m',
-        entryColorText='!'
-        break;
-      case LogEngine.EntryType.Error:
-        entryColorSequence='\x1b[31m',
-        entryColorText='X'
-        break;
-      case LogEngine.EntryType.Change:
-        entryColorSequence='\x1b[95m',
-        entryColorText='\u0394'
-        break;
-      case LogEngine.EntryType.Add:
-        entryColorSequence='\x1b[94m',
-        entryColorText='+'
-        break;
-      case LogEngine.EntryType.Success:
-        entryColorSequence='\x1b[92m',
-        entryColorText='\u221a'
-        break;
-      default:
-        entryColorSequence='';
-        entryColorText='-';
-        break;
-    }
-
-
+    
     try {
-      const dt = LogEngine.getDateTimeString();
+      if(type!=LogEngine.EntryType.Debug || (type===LogEngine.EntryType.Debug && this._showDebug)) {
+        
 
-      const delimiter = '\x1b[0m|'
+        let entryColorSequence = '';
+        let entryColorText = '';
+
+        switch(type) {
+          case LogEngine.EntryType.Debug:
+            entryColorSequence='\x1b[97m',
+            entryColorText='*'
+            break;
+          case LogEngine.EntryType.Info:
+            entryColorSequence='\x1b[90m',
+            entryColorText='\u00b7'
+            break;
+
+          case LogEngine.EntryType.Warning:
+            entryColorSequence='\x1b[93m',
+            entryColorText='!'
+            break;
+          case LogEngine.EntryType.Error:
+            entryColorSequence='\x1b[31m',
+            entryColorText='X'
+            break;
+          case LogEngine.EntryType.Change:
+            entryColorSequence='\x1b[95m',
+            entryColorText='\u0394'
+            break;
+          case LogEngine.EntryType.Add:
+            entryColorSequence='\x1b[94m',
+            entryColorText='+'
+            break;
+          case LogEngine.EntryType.Success:
+            entryColorSequence='\x1b[92m',
+            entryColorText='\u221a'
+            break;
+          default:
+            entryColorSequence='';
+            entryColorText='-';
+            break;
+        }
+
+        const dt = LogEngine.getDateTimeString();
+
+        const delimiter = '\x1b[0m|'
+
+        const messageParts = message.split(splitMessageAtString)
+
+        for(let i=0; i<messageParts.length; i++) {
+        
+          output = `${dt} ${delimiter}`
+        
+          let logStackOutput:string = ' '
+          for(let j=0;j<this.logStack.length;j++) {
+            logStackOutput += `${this.logStack[j]}`
+            if(j<this.logStack.length-1) { logStackOutput += ':'}
+          }
+          logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth, LogEngine.Direction.Right)
+
+          output += `${logStackOutput}`
+          output += `${delimiter}`
+          output += `${entryColorSequence}\xa0${entryColorText}\xa0`;
+          output += `${delimiter}`
+          output += ` ${LogEngine.padString(entryObjectName, ' ', this._entityColumnWidth, LogEngine.Direction.Right)}`
+          output += `${delimiter}`
+          output += type===LogEngine.EntryType.Error ? '\x1b[31m' : ''
+          output += ` ${message}`;
+          output += '\x1b[0m' // ensure formatting is removed
+
+        }
       
-      output = `${dt} ${delimiter}`
-      
-      let logStackOutput:string = ' '
-      for(let i=0;i<this.logStack.length;i++) {
-        logStackOutput += `${this.logStack[i]}`
-        if(i<this.logStack.length-1) { logStackOutput += ':'}
       }
-      logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth, LogEngine.Direction.Right)
-
-      output += `${logStackOutput}`
-      output += `${delimiter}`
-      output += `${entryColorSequence}\xa0${entryColorText}\xa0`;
-      output += `${delimiter}`
-      output += ` ${LogEngine.padString(entryObjectName, ' ', this._entityColumnWidth, LogEngine.Direction.Right)}`
-      output += `${delimiter}`
-      output += type===LogEngine.EntryType.Error ? '\x1b[31m' : ''
-      output += ` ${message}`;
-      output += '\x1b[0m' // ensure formatting is removed
-
+        
     } catch (err) {
       console.error(err);
       throw err;
@@ -88,7 +97,7 @@ export class LogEngine {
 
     console.log(output);
 
-    }
+    
   }
 
   public AddDelimiter(delimiterLabel:string) {
