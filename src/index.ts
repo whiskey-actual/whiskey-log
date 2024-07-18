@@ -4,7 +4,9 @@ export class LogEngine {
     this._showDebug = showDebug
     this._logStackColumnWidth = logStackColumnWidth
     this._entityColumnWidth = entityColumnWidth
-    this.AddLogEntry(LogEngine.EntryType.Info, `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
+    if(showDebug) {
+      this.AddLogEntry(LogEngine.EntryType.Info, `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
+    }
   }
 
   public logStack:string[]=[]
@@ -12,7 +14,7 @@ export class LogEngine {
   private _logStackColumnWidth:number = 40
   private _entityColumnWidth:number = 24
 
-  public AddLogEntry(type: LogEngine.EntryType, message: string, entryObjectName:string='', splitMessageAtString="\n") {
+  public AddLogEntry(type:LogEngine.EntryType, message: string, entryObjectName:string='', splitMessageAtString:string="\n") {
 
     let output = "";
     
