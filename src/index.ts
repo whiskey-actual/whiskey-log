@@ -16,8 +16,6 @@ export class LogEngine {
   private _entityColumnWidth:number = 24
 
   public AddLogEntry(type:LogEngine.EntryType, message:string, splitMessageAtString:string="\n") {
-
-    let output = "";
     
     try {
       if(type!=LogEngine.EntryType.Debug || (type===LogEngine.EntryType.Debug && this._showDebug)) {
@@ -88,8 +86,8 @@ export class LogEngine {
           outputLine += delimiter
           outputLine += entryColorSequence + messageParts[i] + Reset
          
-          outputLines.push(outputLine)
-          
+          console.log(outputLine);
+
         }
       
       }
@@ -98,8 +96,6 @@ export class LogEngine {
       console.error(err);
       throw err;
     }
-
-    console.log(output);
 
     
   }
