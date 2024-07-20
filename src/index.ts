@@ -15,7 +15,7 @@ export class LogEngine {
   private _logStackColumnWidth:number = 40
   private _entityColumnWidth:number = 24
 
-  public AddLogEntry(type:LogEngine.EntryType, message: string, splitMessageAtString:string="\n") {
+  public AddLogEntry(type:LogEngine.EntryType, message:string, splitMessageAtString:string="\n") {
 
     let output = "";
     
@@ -67,10 +67,13 @@ export class LogEngine {
 
         const messageParts = message.split(splitMessageAtString)
 
+        let outputLines:string[] = []
+
         for(let i=0; i<messageParts.length; i++) {
         
-          output = dt
-          output += delimiter
+
+          let outputLine = dt
+          outputLine += delimiter
         
           let logStackOutput:string = ''
           for(let j=0;j<this.logStack.length;j++) {
@@ -79,11 +82,13 @@ export class LogEngine {
           }
           logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth, LogEngine.Direction.Right)
 
-          output += logStackOutput
-          output += delimiter
-          output += entryColorSequence + entryColorText + Reset
-          output += delimiter
-          output += entryColorSequence + messageParts[i] + Reset
+          outputLine += logStackOutput
+          outputLine += delimiter
+          outputLine += entryColorSequence + entryColorText + Reset
+          outputLine += delimiter
+          outputLine += entryColorSequence + messageParts[i] + Reset
+         
+          outputLines.push(outputLine)
           
         }
       
