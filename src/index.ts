@@ -63,7 +63,7 @@ export class LogEngine {
 
         const dt = LogEngine.getDateTimeString();
 
-        const delimiter = Dim + "|" + Reset
+        const delimiter = Dim + " | " + Reset
 
         const messageParts = message.split(splitMessageAtString)
 
@@ -72,7 +72,7 @@ export class LogEngine {
           output = dt
           output += delimiter
         
-          let logStackOutput:string = ' '
+          let logStackOutput:string = ''
           for(let j=0;j<this.logStack.length;j++) {
             logStackOutput += Dim + `${this.logStack[j]}` + Reset
             if(j<this.logStack.length-1) { logStackOutput += ':'}
@@ -82,7 +82,6 @@ export class LogEngine {
           output += logStackOutput
           output += delimiter
           output += entryColorSequence + entryColorText + Reset
-          output += delimiter
           output += delimiter
           output += entryColorSequence + messageParts[i] + Reset
           
