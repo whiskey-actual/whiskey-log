@@ -1,3 +1,5 @@
+import { Dim, FgCyan, FgGreen, FgMagenta, FgRed, FgWhite, FgYellow, Reset } from "./consoleColors"
+
 export class LogEngine {
   constructor(logStack:string[], showDebug:boolean=false, logStackColumnWidth:number=40, entityColumnWidth:number=24) {
     this.logStack=logStack;
@@ -20,74 +22,72 @@ export class LogEngine {
     
     try {
       if(type!=LogEngine.EntryType.Debug || (type===LogEngine.EntryType.Debug && this._showDebug)) {
-        
 
-        let entryColorSequence = '';
+        let entryColorSequence = FgWhite
         let entryColorText = '';
 
         switch(type) {
           case LogEngine.EntryType.Debug:
-            entryColorSequence='\x1b[97m',
+            entryColorSequence=FgYellow
             entryColorText='*'
             break;
           case LogEngine.EntryType.Info:
-            entryColorSequence='\x1b[90m',
+            entryColorSequence=FgWhite
             entryColorText='\u00b7'
             break;
 
           case LogEngine.EntryType.Warning:
-            entryColorSequence='\x1b[93m',
+            entryColorSequence=FgYellow
             entryColorText='!'
             break;
           case LogEngine.EntryType.Error:
-            entryColorSequence='\x1b[31m',
+            entryColorSequence=FgRed
             entryColorText='X'
             break;
           case LogEngine.EntryType.Change:
-            entryColorSequence='\x1b[95m',
+            entryColorSequence=FgMagenta
             entryColorText='\u0394'
             break;
           case LogEngine.EntryType.Add:
-            entryColorSequence='\x1b[94m',
+            entryColorSequence=FgCyan
             entryColorText='+'
             break;
           case LogEngine.EntryType.Success:
-            entryColorSequence='\x1b[92m',
+            entryColorSequence=FgGreen
             entryColorText='\u221a'
             break;
           default:
-            entryColorSequence='';
+            entryColorSequence=FgWhite
             entryColorText='-';
             break;
         }
 
         const dt = LogEngine.getDateTimeString();
 
-        const delimiter = '\x1b[0m|'
+        const delimiter = Dim + "|" + Reset
 
         const messageParts = message.split(splitMessageAtString)
 
         for(let i=0; i<messageParts.length; i++) {
         
-          output = `${dt} ${delimiter}`
+          output = dt
+          output += delimiter
         
           let logStackOutput:string = ' '
           for(let j=0;j<this.logStack.length;j++) {
-            logStackOutput += `${this.logStack[j]}`
+            logStackOutput += Dim + `${this.logStack[j]}` + Reset
             if(j<this.logStack.length-1) { logStackOutput += ':'}
           }
           logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth, LogEngine.Direction.Right)
 
-          output += `${logStackOutput}`
-          output += `${delimiter}`
-          output += `${entryColorSequence}\xa0${entryColorText}\xa0`;
-          output += `${delimiter}`
-          output += ` ${LogEngine.padString(entryObjectName, ' ', this._entityColumnWidth, LogEngine.Direction.Right)}`
-          output += `${delimiter}`
-          output += type===LogEngine.EntryType.Error ? '\x1b[31m' : ''
-          output += ` ${message}`;
-          output += '\x1b[0m' // ensure formatting is removed
-
+          output += logStackOutput
+          output += delimiter
+          output += entryColorSequence + entryColorText + Reset
+          output += delimiter
+          output += LogEngine.padString(entryObjectName, ' ', this._entityColumnWidth, LogEngine.Direction.Right)
+          output += delimiter
+          output += entryColorSequence + messageParts[i] + Reset
+          
         }
       
       }
