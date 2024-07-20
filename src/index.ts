@@ -1,11 +1,10 @@
 import { Dim, FgCyan, FgGreen, FgMagenta, FgRed, FgWhite, FgYellow, Reset } from "./consoleColors"
 
 export class LogEngine {
-  constructor(logStack:string[], showDebug:boolean=false, logStackColumnWidth:number=40, entityColumnWidth:number=24) {
+  constructor(logStack:string[], showDebug:boolean=false, logStackColumnWidth:number=40) {
     this.logStack=logStack;
     this._showDebug = showDebug
     this._logStackColumnWidth = logStackColumnWidth
-    this._entityColumnWidth = entityColumnWidth
     if(showDebug) {
       this.AddLogEntry(LogEngine.EntryType.Info, `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
     }
@@ -16,7 +15,7 @@ export class LogEngine {
   private _logStackColumnWidth:number = 40
   private _entityColumnWidth:number = 24
 
-  public AddLogEntry(type:LogEngine.EntryType, message: string, entryObjectName:string='', splitMessageAtString:string="\n") {
+  public AddLogEntry(type:LogEngine.EntryType, message: string, splitMessageAtString:string="\n") {
 
     let output = "";
     
@@ -84,7 +83,6 @@ export class LogEngine {
           output += delimiter
           output += entryColorSequence + entryColorText + Reset
           output += delimiter
-          output += LogEngine.padString(entryObjectName, ' ', this._entityColumnWidth, LogEngine.Direction.Right)
           output += delimiter
           output += entryColorSequence + messageParts[i] + Reset
           
