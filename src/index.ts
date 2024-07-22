@@ -69,10 +69,7 @@ export class LogEngine {
           messageParts = message.split("\n")
         }
         
-        let outputLines:string[] = []
-
         for(let i=0; i<messageParts.length; i++) {
-        
 
           let outputLine = dt
           outputLine += delimiter
@@ -115,7 +112,7 @@ export class LogEngine {
       return Array(width).join(padCharacter).toString()
     }
     else if (stringToPad.length>width) {
-      return stringToPad.substring(0,width-3) + '..'
+      return stringToPad.substring(0,width-1) + '..'
     }
     else {
 
