@@ -13,9 +13,8 @@ export class LogEngine {
   public logStack:string[]=[]
   private _showDebug:boolean=false
   private _logStackColumnWidth:number = 40
-  private _entityColumnWidth:number = 24
 
-  public AddLogEntry(type:LogEngine.EntryType, message:string, splitMessageAtString:string="\n") {
+  public AddLogEntry(type:LogEngine.EntryType, message:string|string[]) {
     
     try {
       if(type!=LogEngine.EntryType.Debug || (type===LogEngine.EntryType.Debug && this._showDebug)) {
@@ -63,8 +62,13 @@ export class LogEngine {
 
         const delimiter = Dim + " | " + Reset
 
-        const messageParts = message.split(splitMessageAtString)
-
+        let messageParts:string[]=[]
+        if(Array.isArray(message)) {
+          messageParts = message
+        } else {
+          messageParts = message.split("\n")
+        }
+        
         let outputLines:string[] = []
 
         for(let i=0; i<messageParts.length; i++) {
@@ -75,7 +79,7 @@ export class LogEngine {
         
           let logStackOutput:string = ''
           for(let j=0;j<this.logStack.length;j++) {
-            logStackOutput += Dim + `${this.logStack[j]}` + Reset
+            logStackOutput += Dim + this.logStack[j] + Reset
             if(j<this.logStack.length-1) { logStackOutput += ':'}
           }
           logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth, LogEngine.Direction.Right)
@@ -102,6 +106,7 @@ export class LogEngine {
 
   public AddDelimiter(delimiterLabel:string) {
     const delimiterCharacter:string="-"
+    console.log("")
     this.AddLogEntry(LogEngine.EntryType.Info, `${delimiterCharacter.repeat(2)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(120-this._logStackColumnWidth)}`)
   }
 
