@@ -116,7 +116,7 @@ export class LogEngine {
     }
     else {
 
-      const padString:string = Array(width-stringToPad.length-2).join(padCharacter).toString()
+      const padString:string = Array(Math.max(width-stringToPad.length-2,0)).join(padCharacter).toString()
 
       if (padSide===LogEngine.Direction.Left) {
         return (padString + stringToPad)
