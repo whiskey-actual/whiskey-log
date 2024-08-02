@@ -1,54 +1,54 @@
 import { Dim, FgCyan, FgGreen, FgMagenta, FgRed, FgWhite, FgYellow, Reset } from "./consoleColors"
 
 export class LogEngine {
-  constructor(logStack:string[], showDebug:boolean=false, logStackColumnWidth:number=40) {
+  constructor(logStack:string[], showDebug:boolean=false, logStackColumnWidth:number=48) {
     this.logStack=logStack;
     this._showDebug = showDebug
     this._logStackColumnWidth = logStackColumnWidth
     if(showDebug) {
-      this.AddLogEntry(LogEngine.EntryType.Info, `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
+      this.AddLogEntry(LogEntryType.Info, `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
     }
   }
 
   public logStack:string[]=[]
   private _showDebug:boolean=false
-  private _logStackColumnWidth:number = 40
+  private _logStackColumnWidth:number = 48
 
-  public AddLogEntry(type:LogEngine.EntryType, message:string|string[]) {
+  public AddLogEntry(type:LogEntryType, message:string|string[]) {
     
     try {
-      if(type!=LogEngine.EntryType.Debug || (type===LogEngine.EntryType.Debug && this._showDebug)) {
+      if(type!=LogEntryType.Debug || (type===LogEntryType.Debug && this._showDebug)) {
 
         let entryColorSequence = FgWhite
         let entryColorText = '';
 
         switch(type) {
-          case LogEngine.EntryType.Debug:
+          case LogEntryType.Debug:
             entryColorSequence=FgYellow
             entryColorText='*'
             break;
-          case LogEngine.EntryType.Info:
+          case LogEntryType.Info:
             entryColorSequence=FgWhite
             entryColorText='\u00b7'
             break;
 
-          case LogEngine.EntryType.Warning:
+          case LogEntryType.Warning:
             entryColorSequence=FgYellow
             entryColorText='!'
             break;
-          case LogEngine.EntryType.Error:
+          case LogEntryType.Error:
             entryColorSequence=FgRed
             entryColorText='X'
             break;
-          case LogEngine.EntryType.Change:
+          case LogEntryType.Change:
             entryColorSequence=FgMagenta
             entryColorText='\u0394'
             break;
-          case LogEngine.EntryType.Add:
+          case LogEntryType.Add:
             entryColorSequence=FgCyan
             entryColorText='+'
             break;
-          case LogEngine.EntryType.Success:
+          case LogEntryType.Success:
             entryColorSequence=FgGreen
             entryColorText='\u221a'
             break;
@@ -79,7 +79,7 @@ export class LogEngine {
             logStackOutput += Dim + this.logStack[j] + Reset
             if(j<this.logStack.length-1) { logStackOutput += ':'}
           }
-          logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth, LogEngine.Direction.Right)
+          logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth)
 
           outputLine += logStackOutput
           outputLine += delimiter
@@ -104,25 +104,19 @@ export class LogEngine {
   public AddDelimiter(delimiterLabel:string) {
     const delimiterCharacter:string="-"
     console.log("")
-    this.AddLogEntry(LogEngine.EntryType.Info, `${delimiterCharacter.repeat(2)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(120-this._logStackColumnWidth)}`)
+    this.AddLogEntry(LogEntryType.Info, `${delimiterCharacter.repeat(3)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(120-this._logStackColumnWidth)}`)
   }
 
-  private static padString(stringToPad:string, padCharacter:string=' ', width:number=16, padSide:LogEngine.Direction=LogEngine.Direction.Right) {
+  private static padString(stringToPad:string, padCharacter:string=' ', width:number) {
     if (typeof stringToPad === 'undefined' || !stringToPad || stringToPad===null) {
       return Array(width).join(padCharacter).toString()
     }
     else if (stringToPad.length>width) {
-      return stringToPad.substring(0,width-1) + '..'
+      return stringToPad.substring(0,width) + '..'
     }
     else {
-
       const padString:string = Array(Math.max(width-stringToPad.length-2,0)).join(padCharacter).toString()
-
-      if (padSide===LogEngine.Direction.Left) {
-        return (padString + stringToPad)
-      } else {
-        return (stringToPad + padString)
-      }
+      return (stringToPad + padString)
     }
   }
 
@@ -157,22 +151,15 @@ export class LogEngine {
 
 }
 
-export namespace LogEngine {
 
-  export enum EntryType {
-    Debug,
-    Info,
-    Warning,
-    Error,
-    Add,
-    Change,
-    Remove,
-    Success
-  }
-
-  
-  export enum Direction {
-    Left,
-    Right
-  }
+export enum LogEntryType {
+  Debug,
+  Info,
+  Warning,
+  Error,
+  Add,
+  Change,
+  Remove,
+  Success
 }
+
