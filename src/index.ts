@@ -115,7 +115,7 @@ export class LogEngine {
       return stringToPad.substring(0,width) + '..'
     }
     else {
-      const padString:string = Array(Math.max(width-stringToPad.length-2,0)).join(padCharacter).toString()
+      const padString:string = Array(Math.max(width-stringToPad.length-1,0)).join(padCharacter).toString()
       return (stringToPad + padString)
     }
   }
