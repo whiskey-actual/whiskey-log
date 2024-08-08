@@ -17,7 +17,7 @@ export class LogEngine {
   public AddLogEntry(type:LogEntryType, message:string|string[]) {
     
     try {
-      if(type!=LogEntryType.Debug || (type===LogEntryType.Debug && this._showDebug)) {
+      if(message && (type!=LogEntryType.Debug || (type===LogEntryType.Debug && this._showDebug))) {
 
         let entryColorSequence = FgWhite
         let entryColorText = '';
@@ -66,7 +66,14 @@ export class LogEngine {
         if(Array.isArray(message)) {
           messageParts = message
         } else {
-          messageParts = message.split("\n")
+          try {
+            messageParts = message.split("\n")
+          } catch {
+            console.error("oops, couldn't parse the message:")
+            console.debug(message)
+            messageParts=[]
+          }
+          
         }
         
         for(let i=0; i<messageParts.length; i++) {
