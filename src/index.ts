@@ -122,7 +122,11 @@ export class LogEngine {
       return stringToPad.substring(0,width) + '..'
     }
     else {
-      const padString:string = Array(Math.max(width-stringToPad.length-1,0)).join(padCharacter).toString()
+      let padString:string=""
+      let padLength = Math.max(width-stringToPad.length-1,0)
+      for(let i=0; i<padLength; i++) {
+        padString += " "
+      }
       return (stringToPad + padString)
     }
   }
