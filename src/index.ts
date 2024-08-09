@@ -81,14 +81,10 @@ export class LogEngine {
           let outputLine = dt
           outputLine += delimiter
         
-          let logStackOutput:string = ''
-          for(let j=0;j<this.logStack.length;j++) {
-            logStackOutput += Dim + this.logStack[j] + Reset
-            if(j<this.logStack.length-1) { logStackOutput += ':'}
-          }
+          let logStackOutput:string = this.logStack.join(":")
           logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth)
 
-          outputLine += logStackOutput
+          outputLine += Dim + logStackOutput + Reset
           outputLine += delimiter
           outputLine += entryColorSequence + entryColorText + Reset
           outputLine += delimiter
