@@ -115,7 +115,7 @@ export class LogEngine {
       return Array(width).join(padCharacter).toString()
     }
     else if (stringToPad.length>width) {
-      return stringToPad.substring(0,width) + '..'
+      return stringToPad.substring(0,width-2) + '..'
     }
     else {
       let padString:string=""
