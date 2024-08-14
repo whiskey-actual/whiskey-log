@@ -14,7 +14,7 @@ export class LogEngine {
   private _showDebug:boolean=false
   private _logStackColumnWidth:number = 48
 
-  public AddLogEntry(type:LogEntryType, message:string|string[], addPriorBlankLine:boolean=false) {
+  public AddLogEntry(type:LogEntryType, message:string|string[], preceedingBlankLine:boolean=false, subsequentBlankLine:boolean=false) {
     
     try {
       if(message && (type!=LogEntryType.Debug || (type===LogEntryType.Debug && this._showDebug))) {
@@ -90,10 +90,9 @@ export class LogEngine {
           outputLine += delimiter
           outputLine += entryColorSequence + messageParts[i] + Reset
          
-          if(addPriorBlankLine) {
-            console.log()
-          }
+          if(preceedingBlankLine) { console.log() }
           console.log(outputLine);
+          if(subsequentBlankLine) { console.log() }
 
         }
       
