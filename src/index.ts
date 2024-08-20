@@ -75,6 +75,8 @@ export class LogEngine {
           }
           
         }
+
+        if(preceedingBlankLine) { console.log() }
         
         for(let i=0; i<messageParts.length; i++) {
 
@@ -92,13 +94,14 @@ export class LogEngine {
             outputLine += delimiter
             outputLine += entryColorSequence + messageParts[i] + Reset
            
-            if(preceedingBlankLine) { console.log() }
+            
             console.log(outputLine);
-            if(subsequentBlankLine) { console.log() }
 
           }
 
         }
+
+        if(subsequentBlankLine) { console.log() }
       
       }
         
