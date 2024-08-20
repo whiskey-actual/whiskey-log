@@ -17,7 +17,7 @@ export class LogEngine {
   public AddLogEntry(type:LogEntryType, message:string|string[], preceedingBlankLine:boolean=false, subsequentBlankLine:boolean=false) {
     
     try {
-      if(message && (type!=LogEntryType.Debug || (type===LogEntryType.Debug && this._showDebug))) {
+      if(message && message.length>0 && (type!=LogEntryType.Debug || (type===LogEntryType.Debug && this._showDebug))) {
 
         let entryColorSequence = FgWhite
         let entryColorText = '';
@@ -78,21 +78,25 @@ export class LogEngine {
         
         for(let i=0; i<messageParts.length; i++) {
 
-          let outputLine = dt
-          outputLine += delimiter
-        
-          let logStackOutput:string = this.logStack.join(":")
-          logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth)
+          if(messageParts[i] && messageParts[i].length>0) {
 
-          outputLine += Dim + logStackOutput + Reset
-          outputLine += delimiter
-          outputLine += entryColorSequence + entryColorText + Reset
-          outputLine += delimiter
-          outputLine += entryColorSequence + messageParts[i] + Reset
-         
-          if(preceedingBlankLine) { console.log() }
-          console.log(outputLine);
-          if(subsequentBlankLine) { console.log() }
+            let outputLine = dt
+            outputLine += delimiter
+          
+            let logStackOutput:string = this.logStack.join(":")
+            logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth)
+  
+            outputLine += Dim + logStackOutput + Reset
+            outputLine += delimiter
+            outputLine += entryColorSequence + entryColorText + Reset
+            outputLine += delimiter
+            outputLine += entryColorSequence + messageParts[i] + Reset
+           
+            if(preceedingBlankLine) { console.log() }
+            console.log(outputLine);
+            if(subsequentBlankLine) { console.log() }
+
+          }
 
         }
       
