@@ -17,7 +17,7 @@ export class LogEngine {
   public AddLogEntry(type:LogEntryType, message:string|string[], preceedingBlankLine:boolean=false, subsequentBlankLine:boolean=false) {
     
     try {
-      if(message && message.length>0 && (type!=LogEntryType.Debug || (type===LogEntryType.Debug && this._showDebug))) {
+      if(message && (type!=LogEntryType.Debug || (type===LogEntryType.Debug && this._showDebug))) {
 
         let entryColorSequence = FgWhite
         let entryColorText = '';
