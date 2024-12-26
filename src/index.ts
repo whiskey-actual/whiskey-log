@@ -1,12 +1,12 @@
 import { Dim, FgCyan, FgGreen, FgMagenta, FgRed, FgWhite, FgYellow, Reset } from "./consoleColors"
 
 export class LogEngine {
-  constructor(logStack:string[], showDebug:boolean=false, logStackColumnWidth:number=48) {
+  constructor(logStack:string[], logStackColumnWidth:number=48, showDebug:boolean=false) {
     this.logStack=logStack;
     this._showDebug = showDebug
     this._logStackColumnWidth = logStackColumnWidth
     if(showDebug) {
-      this.AddLogEntry(LogEntryType.Info, `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
+      this.AddLogEntry('debug', `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
     }
   }
 
@@ -14,47 +14,51 @@ export class LogEngine {
   private _showDebug:boolean=false
   private _logStackColumnWidth:number = 48
 
-  public AddLogEntry(type:LogEntryType, message:string|string[], preceedingBlankLine:boolean=false, subsequentBlankLine:boolean=false) {
+  public AddLogEntry(type:'debug'|'info'|'warn'|'error'|'change'|'add'|'success'|'remove', message:string|string[], preceedingBlankLine:boolean=false, subsequentBlankLine:boolean=false) {
     
     try {
-      if(message && message.length>0 && (type!=LogEntryType.Debug || (type===LogEntryType.Debug && this._showDebug))) {
+      if(message && message.length>0 && (type!='debug' || (type==='debug' && this._showDebug))) {
 
         let entryColorSequence = FgWhite
         let entryColorText = '';
 
         switch(type) {
-          case LogEntryType.Debug:
+          case 'debug':
             entryColorSequence=FgYellow
-            entryColorText='*'
+            entryColorText='#'
             break;
-          case LogEntryType.Info:
+          case 'info':
             entryColorSequence=FgWhite
             entryColorText='\u00b7'
             break;
 
-          case LogEntryType.Warning:
+          case 'warn':
             entryColorSequence=FgYellow
-            entryColorText='!'
+            entryColorText='>'
             break;
-          case LogEntryType.Error:
+          case 'error':
             entryColorSequence=FgRed
             entryColorText='X'
             break;
-          case LogEntryType.Change:
+          case 'change':
             entryColorSequence=FgMagenta
             entryColorText='\u0394'
             break;
-          case LogEntryType.Add:
+          case 'add':
             entryColorSequence=FgCyan
             entryColorText='+'
             break;
-          case LogEntryType.Success:
+          case 'success':
             entryColorSequence=FgGreen
             entryColorText='\u221a'
             break;
+          case 'remove':
+            entryColorSequence=FgRed
+            entryColorText="-"
+            break;
           default:
             entryColorSequence=FgWhite
-            entryColorText='-';
+            entryColorText='@';
             break;
         }
 
@@ -112,7 +116,7 @@ export class LogEngine {
   public AddDelimiter(delimiterLabel:string) {
     const delimiterCharacter:string="-"
     console.log("")
-    this.AddLogEntry(LogEntryType.Info, `${delimiterCharacter.repeat(3)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(120-this._logStackColumnWidth)}`)
+    this.AddLogEntry('info', `${delimiterCharacter.repeat(3)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(120-this._logStackColumnWidth)}`)
   }
 
   private static padString(stringToPad:string, padCharacter:string=' ', width:number) {
@@ -162,16 +166,3 @@ export class LogEngine {
   }
 
 }
-
-
-export enum LogEntryType {
-  Debug,
-  Info,
-  Warning,
-  Error,
-  Add,
-  Change,
-  Remove,
-  Success
-}
-
