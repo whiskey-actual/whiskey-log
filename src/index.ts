@@ -9,6 +9,7 @@ export class LogEngine {
   private _logStackColumnWidth:number = 24
   private _terminalWidth:number = 180
   public logStack:string[]=[]
+  public useEmoji:boolean = false
 
   constructor(logStackColumnWidth:number=48, terminalWidth:number=180, showDebug:boolean=false) {
     this._showDebug = showDebug
@@ -25,51 +26,61 @@ export class LogEngine {
       if(message && message.length>0 && (logEntryType!='debug' || (logEntryType==='debug' && this._showDebug))) { 
 
         let entryColorSequence = FgWhite
-        let entryColorText = '';
+        let entryIcon = '';
+        let entryEmoji = 'ℹ💬'
 
         switch(logEntryType) {
           case 'debug':
             entryColorSequence=FgLightGrey
-            entryColorText='#'
+            entryIcon='#'
+            entryIcon='🔍'
             break;
           case 'info':
             entryColorSequence=FgWhite
-            entryColorText='\u00b7'
+            entryIcon='\u00b7'
+            entryEmoji='ℹ💬'
             break;
-
           case 'warn':
             entryColorSequence=Yellow
-            entryColorText='>'
+            entryIcon='>'
+            entryEmoji='⚠️'
             break;
           case 'error':
             entryColorSequence=FgRed
-            entryColorText='X'
+            entryIcon='X'
+            entryEmoji='❌'
             break;
           case 'change':
             entryColorSequence=BrightPurple
-            entryColorText='\u0394'
+            entryIcon='\u0394'
+            entryEmoji='♻️'
             break;
           case 'add':
             entryColorSequence=FgCyan
-            entryColorText='+'
+            entryIcon='+'
+            entryEmoji='➕'
             break;
           case 'success':
             entryColorSequence=FgGreen
-            entryColorText='\u221a'
+            entryIcon='\u221a'
+            entryEmoji='✅'
             break;
           case 'remove':
             entryColorSequence=FgRed
-            entryColorText="-"
+            entryIcon="-"
+            entryEmoji='➖'
             break;
           case 'get':
-            entryColorText="<"
+            entryIcon="<"
+            entryEmoji='⬅️'
             break;
           case 'put':
-            entryColorText=">"
+            entryIcon=">"
+            entryEmoji='➡️'
             break;
           default:
             entryColorSequence=FgWhite
-            entryColorText='@';
+            entryIcon='@';
             break;
         }
 
@@ -131,7 +142,7 @@ export class LogEngine {
 
           outputLine += Dim + logStackOutput + Reset
           outputLine += delimiter
-          outputLine += entryColorSequence + entryColorText + Reset
+          outputLine += this.useEmoji ? entryEmoji : entryColorSequence + entryIcon + Reset
           outputLine += delimiter
           outputLine += entryColorSequence + lines[i] + Reset
           
