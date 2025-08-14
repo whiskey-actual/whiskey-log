@@ -1,30 +1,35 @@
-import { Dim, FgCyan, FgGreen, FgMagenta, FgRed, FgWhite, FgYellow, Reset } from "./consoleColors"
+import { BrightPurple, Dim, FgCyan, FgGreen, FgLightGrey, FgMagenta, FgRed, FgWhite, FgYellow, Reset, Yellow } from "./consoleColors"
+import getDateTimeString from "./getDateTimeString"
+import LogEntryTypes from "./logEntryTypes"
+import padString from "./padString"
 
 export class LogEngine {
-  constructor(logStack:string[], logStackColumnWidth:number=48, showDebug:boolean=false) {
-    this.logStack=logStack;
+
+  private _showDebug:boolean=false
+  private _logStackColumnWidth:number = 24
+  private _terminalWidth:number = 180
+  public logStack:string[]=[]
+
+  constructor(logStackColumnWidth:number=48, terminalWidth:number=180, showDebug:boolean=false) {
     this._showDebug = showDebug
     this._logStackColumnWidth = logStackColumnWidth
+    this._terminalWidth = terminalWidth
     if(showDebug) {
       this.AddLogEntry('debug', `LogEngine initialized (showDebug=${this._showDebug.toString()})`)
     }
   }
 
-  public logStack:string[]=[]
-  private _showDebug:boolean=false
-  private _logStackColumnWidth:number = 48
-
-  public AddLogEntry(type:'debug'|'info'|'warn'|'error'|'change'|'add'|'success'|'remove', message:string|string[], preceedingBlankLine:boolean=false, subsequentBlankLine:boolean=false) {
+  public AddLogEntry(logEntryType:LogEntryTypes, message:string|string[], preceedingBlankLine:boolean=false, tabs:number=0) {
     
     try {
-      if(message && message.length>0 && (type!='debug' || (type==='debug' && this._showDebug))) {
+      if(message && message.length>0 && (logEntryType!='debug' || (logEntryType==='debug' && this._showDebug))) { 
 
         let entryColorSequence = FgWhite
         let entryColorText = '';
 
-        switch(type) {
+        switch(logEntryType) {
           case 'debug':
-            entryColorSequence=FgYellow
+            entryColorSequence=FgLightGrey
             entryColorText='#'
             break;
           case 'info':
@@ -33,7 +38,7 @@ export class LogEngine {
             break;
 
           case 'warn':
-            entryColorSequence=FgYellow
+            entryColorSequence=Yellow
             entryColorText='>'
             break;
           case 'error':
@@ -41,7 +46,7 @@ export class LogEngine {
             entryColorText='X'
             break;
           case 'change':
-            entryColorSequence=FgMagenta
+            entryColorSequence=BrightPurple
             entryColorText='\u0394'
             break;
           case 'add':
@@ -56,13 +61,19 @@ export class LogEngine {
             entryColorSequence=FgRed
             entryColorText="-"
             break;
+          case 'get':
+            entryColorText="<"
+            break;
+          case 'put':
+            entryColorText=">"
+            break;
           default:
             entryColorSequence=FgWhite
             entryColorText='@';
             break;
         }
 
-        const dt = LogEngine.getDateTimeString();
+        const dt = getDateTimeString();
 
         const delimiter = Dim + " | " + Reset
 
@@ -76,93 +87,72 @@ export class LogEngine {
             console.error("oops, couldn't parse the message:")
             console.debug(message)
             messageParts=[]
-          }
-          
+          } 
         }
+
+        let lines:string[]=[]
+        messageParts.map((m)=> {
+          let line:string[]=[]
+          let words = m.split(/[\s\n]/)
+          for(let i=0; i<words.length; i++) {
+
+            for(let j=0; j<tabs; j++) {
+              line.push("  ")
+            }
+            line.push(`${words[i]}`)
+            let currentLineLength=0
+            line.map((w)=>{
+              currentLineLength+=w.length+1 // +1 to accomodate spaces
+            })
+            currentLineLength-=1 // remove trailing space
+            if(i===words.length-1 || (i<words.length-1 && (currentLineLength + words[i+1].length>(this._terminalWidth-this._logStackColumnWidth)))) {
+              lines.push(line.join(" "))
+              line = []
+            }
+          }
+        })
 
         if(preceedingBlankLine) { console.log() }
         
-        for(let i=0; i<messageParts.length; i++) {
+        for(let i=0; i<lines.length; i++) {
 
           let outputLine = dt
           outputLine += delimiter
+
+          let newLogStack:string[]=[]
+          this.logStack.map((stackItem) => {
+            if(newLogStack.length===0 || newLogStack[newLogStack.length]!==stackItem) {
+              newLogStack.push(stackItem) // prevents recursive expansion
+            }
+          })
         
-          let logStackOutput:string = this.logStack.join(":")
-          logStackOutput = LogEngine.padString(logStackOutput, ' ', this._logStackColumnWidth)
+          let logStackOutput:string = newLogStack.join(":")
+          logStackOutput = padString(logStackOutput, this._logStackColumnWidth)
 
           outputLine += Dim + logStackOutput + Reset
           outputLine += delimiter
           outputLine += entryColorSequence + entryColorText + Reset
           outputLine += delimiter
-          outputLine += entryColorSequence + messageParts[i] + Reset
+          outputLine += entryColorSequence + lines[i] + Reset
           
           
           console.log(outputLine);
 
         }
-
-        if(subsequentBlankLine) { console.log() }
       
       }
         
     } catch (err) {
-      console.error(err);
+      console.debug(err);
       throw err;
     }
 
-    
   }
 
   public AddDelimiter(delimiterLabel:string) {
     const delimiterCharacter:string="-"
     console.log("")
-    this.AddLogEntry('info', `${delimiterCharacter.repeat(3)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(120-this._logStackColumnWidth)}`)
-  }
-
-  private static padString(stringToPad:string, padCharacter:string=' ', width:number) {
-    if (typeof stringToPad === 'undefined' || !stringToPad || stringToPad===null) {
-      return Array(width).join(padCharacter).toString()
-    }
-    else if (stringToPad.length>width) {
-      return stringToPad.substring(0,width-3) + '..'
-    }
-    else {
-      let padString:string=""
-      let padLength = Math.max(width-stringToPad.length-1,0)
-      for(let i=0; i<padLength; i++) {
-        padString += " "
-      }
-      return (stringToPad + padString)
-    }
-  }
-
-  private static getDateTimeString():string {
-
-    let output:string = '';
-  
-    try {
-      // parse the date/time ourselves, so we don't have any dependencies.
-      const timestamp = new Date();
-      const d = timestamp.getDate();
-      const m = timestamp.getMonth() + 1;
-      const y = timestamp.getFullYear();
-      const date = `${y}-${m <= 9 ? "0" + m : m}-${d <= 9 ? "0" + d : d}`;
-  
-      const h = timestamp.getHours();
-      const mm = timestamp.getMinutes();
-      const s = timestamp.getSeconds();
-      const time = `${h <= 9 ? "0" + h : h}:${mm <= 9 ? "0" + mm : mm}:${
-        s <= 9 ? "0" + s : s
-      }`;
-  
-      output = `${date} ${time}`
-  
-    } catch (err) {
-      throw(`${arguments.callee.toString()}: ${err}`)
-    }
-  
-    return output;
-  
+    this.AddLogEntry('info', `${delimiterCharacter.repeat(3)}[ ${delimiterLabel} ]${delimiterCharacter.repeat(100-this._logStackColumnWidth)}`)
   }
 
 }
